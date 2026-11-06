@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTH1W - Grade 9 Math Mastery Hub (Ontario Curriculum)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- MathJax for math notation -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="h-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 px-4 py-3 shadow-sm">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <button id="toggle-sidebar" class="md:hidden text-slate-600 dark:text-slate-300 hover:text-brand-600 focus:outline-none p-1">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <div class="flex items-center gap-2">
+                    <div class="bg-brand-600 text-white p-2 rounded-lg font-bold text-lg leading-none">
+                        MTH
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg leading-tight">Ontario MTH1W Hub</h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Grade 9 Destreamed Mathematics</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats & Controls -->
+            <div class="flex items-center gap-4">
+                <div class="hidden sm:flex items-center gap-3 bg-slate-100 dark:bg-slate-700/60 px-3 py-1.5 rounded-full text-xs font-semibold">
+                    <div class="flex items-center text-amber-500" title="Current Streak">
+                        <i class="fa-solid fa-fire mr-1 text-sm"></i>
+                        <span id="streak-count">3</span> Day Streak
+                    </div>
+                    <div class="h-4 w-px bg-slate-300 dark:bg-slate-600"></div>
+                    <div class="flex items-center text-emerald-600 dark:text-emerald-400" title="Total XP">
+                        <i class="fa-solid fa-star mr-1 text-sm"></i>
+                        <span id="xp-count">0</span> XP
+                    </div>
+                </div>
+
+                <!-- Dark Mode Toggle -->
+                <button id="theme-toggle" class="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none">
+                    <i id="theme-toggle-dark-icon" class="fa-solid fa-moon text-lg hidden"></i>
+                    <i id="theme-toggle-light-icon" class="fa-solid fa-sun text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-20 w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out md:static flex flex-col pt-16 md:pt-0">
+            <div class="p-4 border-b border-slate-200 dark:border-slate-700">
+                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Overall Mastery</div>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
+                    <div id="overall-progress-bar" class="bg-brand-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    <span>Solved: <span id="solved-count">0</span>/40</span>
+                    <span id="overall-progress-text" class="font-medium">0%</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="flex-1 p-3 space-y-1 overflow-y-auto custom-scrollbar" id="unit-nav">
+                <button data-unit="overview" class="unit-btn w-full text-left px-3 py-2.5 rounded-lg font-medium text-sm flex items-center gap-3 transition-colors bg-brand-50 text-brand-700 dark:bg-slate-700 dark:text-white">
+                    <i class="fa-solid fa-compass text-brand-500 w-5 text-center"></i>
+                    <span>Course Overview</span>
+                </button>
+                
+                <div class="pt-2 pb-1 px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Curriculum Units</div>
+
+                <button data-unit="unit1" class="unit-btn w-full text-left px-3 py-2.5 rounded-lg font-medium text-sm flex items-center gap-3 transition-colors text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50">
+                    <i class="fa-solid fa-superscript text-purple-500 w-5 text-center"></i>
+                    <div class="truncate">
+                        <div class="truncate font-semibold">Unit 1: Exponents & Numbers</div>
+                        <div class="text-xs text-slate-400 dark:text-slate-500 truncate">Powers, Rational Stats (10 Qs)</div>
+                    </div>
+                </button>
+
+                <button data-unit="unit2" class="unit-btn w-full text-left px-3 py-2.5 rounded-lg font-medium text-sm flex items-center gap-3 transition-colors text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50">
+                    <i class="fa-solid fa-chart-line text-blue-500 w-5 text-center"></i>
+                    <div class="truncate">
+                        <div class="truncate font-semibold">Unit 2: Algebra & Linear</div>
+                        <div class="text-xs text-slate-400 dark:text-slate-500 truncate">Equations, Slope $y=mx+b$ (10 Qs)</div>
+                    </div>
+                </button>
+
+                <button data-unit="unit3" class="unit-btn w-full text-left px-3 py-2.5 rounded-lg font-medium text-sm flex items-center gap-3 transition-colors text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50">
+                    <i class="fa-solid fa-shapes text-emerald-500 w-5 text-center"></i>
+                    <div class="truncate">
+                        <div class="truncate font-semibold">Unit 3: Geometry & Coding</div>
+                        <div class="text-xs text-slate-400 dark:text-slate-500 truncate">Volume, Angles, Code (10 Qs)</div>
+                    </div>
+                </button>
+
+                <button data-unit="unit4" class="unit-btn w-full text-left px-3 py-2.5 rounded-lg font-medium text-sm flex items-center gap-3 transition-colors text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50">
+                    <i class="fa-solid fa-piggy-bank text-amber-500 w-5 text-center"></i>
+                    <div class="truncate">
+                        <div class="truncate font-semibold">Unit 4: Data & Finances</div>
+                        <div class="text-xs text-slate-400 dark:text-slate-500 truncate">Stats, Interest, Budget (10 Qs)</div>
+                    </div>
+                </button>
+            </nav>
+
+            <!-- Badges Footer -->
+            <div class="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+                <div class="text-xs font-semibold text-slate-400 mb-2 uppercase">Unit Badges</div>
+                <div class="flex justify-around" id="badges-container">
+                    <span title="Exponent Expert" class="text-xl filter grayscale opacity-40 transition-all cursor-pointer" id="badge-u1">⚡</span>
+                    <span title="Linear Legend" class="text-xl filter grayscale opacity-40 transition-all cursor-pointer" id="badge-u2">📈</span>
+                    <span title="Geometry Genius" class="text-xl filter grayscale opacity-40 transition-all cursor-pointer" id="badge-u3">📐</span>
+                    <span title="Financial Wizard" class="text-xl filter grayscale opacity-40 transition-all cursor-pointer" id="badge-u4">💰</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 custom-scrollbar">
+            <div class="max-w-5xl mx-auto" id="main-content">
+                <!-- Dynamically populated content -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Application Script & Question Database -->
+    <script>
+        // --- 40+ COMPLETE QUESTION DATABASE (10 PER UNIT) ---
+        const questionBank = {
+            unit1: [
+                {
+                    id: 'u1_q1',
+                    difficulty: 'Easy',
+                    title: '1. Simplifying Exponents with Product Rule',
+                    text: 'Simplify the expression into a single power: $$x^4 \\cdot x^5$$',
+                    options: ['x⁹', 'x²⁰', 'x¹', '2x⁹'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Product Rule states that when multiplying terms with the same base, add their exponents ($a^m \\cdot a^n = a^{m+n}$).',
+                        'Hint 2: Identify the exponents: 4 and 5. The base $x$ remains the same.',
+                        'Hint 3: Add the exponents together: $4 + 5 = 9$. Result is $x^9$.'
+                    ],
+                    explanation: 'Applying the product law $x^a \\cdot x^b = x^{a+b}$, we add exponents $4 + 5 = 9$, yielding $x^9$.'
+                },
+                {
+                    id: 'u1_q2',
+                    difficulty: 'Easy',
+                    title: '2. Quotient Rule for Powers',
+                    text: 'Simplify: $$\\frac{y^9}{y^3}$$',
+                    options: ['y³', 'y⁶', 'y¹²', 'y²⁷'],
+                    correct: 1,
+                    hints: [
+                        'Hint 1: Quotient Rule states $a^m \\div a^n = a^{m-n}$.',
+                        'Hint 2: Keep base $y$ and subtract the denominator exponent from the numerator exponent.',
+                        'Hint 3: $9 - 3 = 6$. So $y^6$.'
+                    ],
+                    explanation: 'Using quotient rule $y^{9-3} = y^6$.'
+                },
+                {
+                    id: 'u1_q3',
+                    difficulty: 'Medium',
+                    title: '3. Power of a Power Rule',
+                    text: 'Simplify: $$(2x^3)^4$$',
+                    options: ['8x⁷', '16x¹²', '2x¹²', '8x¹²'],
+                    correct: 1,
+                    hints: [
+                        'Hint 1: Apply exponent 4 to BOTH the numerical coefficient $2$ and the power $x^3$.',
+                        'Hint 2: $2^4 = 2 \\times 2 \\times 2 \\times 2 = 16$.',
+                        'Hint 3: For power of power, multiply exponents: $(x^3)^4 = x^{3 \\times 4} = x^{12}$. Combine to get $16x^{12}$.'
+                    ],
+                    explanation: '$(2x^3)^4 = 2^4 \\cdot (x^3)^4 = 16x^{12}$.'
+                },
+                {
+                    id: 'u1_q4',
+                    difficulty: 'Medium',
+                    title: '4. Combining Multiple Exponent Laws',
+                    text: 'Simplify completely: $$\\frac{(x^2 \\cdot x^4)^3}{x^5}$$',
+                    options: ['x¹³', 'x⁵', 'x¹⁸', 'x¹¹'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Simplify inside brackets first: $x^2 \\cdot x^4 = x^{2+4} = x^6$.',
+                        'Hint 2: Apply outer exponent: $(x^6)^3 = x^{6 \\times 3} = x^{18}$.',
+                        'Hint 3: Now divide by denominator: $x^{18} \\div x^5 = x^{18-5} = x^{13}$.'
+                    ],
+                    explanation: 'Inside bracket = $x^6$. Raised to 3rd power = $x^{18}$. Divided by $x^5$ = $x^{18-5} = x^{13}$.'
+                },
+                {
+                    id: 'u1_q5',
+                    difficulty: 'Easy',
+                    title: '5. Zero Exponent Rule',
+                    text: 'Evaluate: $$(45x^3y^7)^0 + 5$$',
+                    options: ['0', '5', '6', '46'],
+                    correct: 2,
+                    hints: [
+                        'Hint 1: Recall that any non-zero expression raised to power 0 equals 1.',
+                        'Hint 2: $(45x^3y^7)^0 = 1$.',
+                        'Hint 3: Add $1 + 5 = 6$.'
+                    ],
+                    explanation: 'Any non-zero quantity raised to power 0 is 1. Thus $1 + 5 = 6$.'
+                },
+                {
+                    id: 'u1_q6',
+                    difficulty: 'Medium',
+                    title: '6. Order of Operations with Fractions & Exponents',
+                    text: 'Evaluate: $$\\left(\\frac{2}{3}\\right)^3 \\times 27$$',
+                    options: ['8', '18', '24', '6'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Apply power of 3 to numerator and denominator separately: $(2/3)^3 = 2^3 / 3^3$.',
+                        'Hint 2: $2^3 = 8$ and $3^3 = 27$, so fraction becomes $8/27$.',
+                        'Hint 3: Multiply $(8/27) \\times 27 = 8$.'
+                    ],
+                    explanation: '$(2/3)^3 = 8/27$. Multiplying by 27 cancels denominator, leaving 8.'
+                },
+                {
+                    id: 'u1_q7',
+                    difficulty: 'Hard',
+                    title: '7. Rational Operations in Context',
+                    text: 'A computer chip speed doubles every 2 years. If its current speed is $2^4$ MHz, what will its speed be in 8 years?',
+                    options: ['2⁸ MHz', '2¹² MHz', '2⁶ MHz', '2¹⁶ MHz'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: 8 years contains how many 2-year cycles? $8 \\div 2 = 4$ cycles.',
+                        'Hint 2: Speed doubles 4 times, meaning multiply by $2^4$.',
+                        'Hint 3: Initial speed $2^4 \\times 2^4 = 2^{4+4} = 2^8$ MHz.'
+                    ],
+                    explanation: 'In 8 years, 4 doubling cycles occur ($2^4$). $2^4 \\times 2^4 = 2^8$ MHz.'
+                },
+                {
+                    id: 'u1_q8',
+                    difficulty: 'Medium',
+                    title: '8. Negative Base Rules',
+                    text: 'Which statement is true regarding $(-3)^4$ vs $-3^4$?',
+                    options: ['Both equal 81', 'Both equal -81', '(-3)⁴ = 81 while -3⁴ = -81', '(-3)⁴ = -81 while -3⁴ = 81'],
+                    correct: 2,
+                    hints: [
+                        'Hint 1: $(-3)^4$ means $(-3) \\times (-3) \\times (-3) \\times (-3)$.',
+                        'Hint 2: $-3^4$ means $-(3 \\times 3 \\times 3 \\times 3)$.',
+                        'Hint 3: Even exponent inside brackets yields positive +81. Without brackets negative sign stays -81.'
+                    ],
+                    explanation: 'Parentheses include the negative sign in the exponent power: $(-3)^4 = 81$. Without brackets, $-3^4 = -(81) = -81$.'
+                },
+                {
+                    id: 'u1_q9',
+                    difficulty: 'Hard',
+                    title: '9. Simplifying Algebraic Quotients',
+                    text: 'Simplify: $$\\frac{12a^5b^3}{4a^2b}$$',
+                    options: ['3a³b²', '8a³b²', '3a⁷b⁴', '3a³b³'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Divide numerical coefficients: $12 \\div 4 = 3$.',
+                        'Hint 2: Apply quotient law to $a$: $a^5 \\div a^2 = a^{5-2} = a^3$.',
+                        'Hint 3: Apply quotient law to $b$: $b^3 \\div b^1 = b^{3-1} = b^2$. Combine terms: $3a^3b^2$.'
+                    ],
+                    explanation: '$12/4 = 3$, $a^{5-2} = a^3$, $b^{3-1} = b^2$. Final answer $3a^3b^2$.'
+                },
+                {
+                    id: 'u1_q10',
+                    difficulty: 'Hard',
+                    title: '10. Scientific Notation & Powers of 10',
+                    text: 'Express $(3 \\times 10^4) \\times (4 \\times 10^5)$ in scientific notation:',
+                    options: ['12 × 10⁹', '1.2 × 10¹⁰', '1.2 × 10⁹', '12 × 10²⁰'],
+                    correct: 1,
+                    hints: [
+                        'Hint 1: Multiply numerical coefficients: $3 \\times 4 = 12$.',
+                        'Hint 2: Multiply powers of ten: $10^4 \\cdot 10^5 = 10^{4+5} = 10^9$.',
+                        'Hint 3: Convert $12 \\times 10^9$ into proper scientific notation ($1.2 \\times 10^1 \\times 10^9 = 1.2 \\times 10^{10}$).'
+                    ],
+                    explanation: '$3 \\times 4 = 12$, powers $10^4 \\times 10^5 = 10^9$. In proper form $12 \\times 10^9 = 1.2 \\times 10^{10}$.'
+                }
+            ],
+            unit2: [
+                {
+                    id: 'u2_q1',
+                    difficulty: 'Easy',
+                    title: '1. Identifying Slope and Intercept',
+                    text: 'In the linear equation $y = -3x + 7$, what are the slope ($m$) and y-intercept ($b$)?',
+                    options: ['m = 3, b = 7', 'm = -3, b = 7', 'm = 7, b = -3', 'm = -3, b = -7'],
+                    correct: 1,
+                    hints: [
+                        'Hint 1: Linear equations follow slope-intercept form $y = mx + b$.',
+                        'Hint 2: Slope $m$ is the coefficient multiplied by $x$.',
+                        'Hint 3: Constant $b$ is the y-intercept. Here $m = -3$ and $b = 7$.'
+                    ],
+                    explanation: 'Comparing with $y = mx + b$, $m = -3$ (slope) and $b = 7$ (y-intercept).'
+                },
+                {
+                    id: 'u2_q2',
+                    difficulty: 'Easy',
+                    title: '2. Solving Multi-Step Equations',
+                    text: 'Solve for $x$: $$4x - 9 = 15$$',
+                    options: ['x = 4', 'x = 6', 'x = 1.5', 'x = 24'],
+                    correct: 1,
+                    hints: [
+                        'Hint 1: Add 9 to both sides to isolate the $x$ term.',
+                        'Hint 2: $4x = 15 + 9 \\Rightarrow 4x = 24$.',
+                        'Hint 3: Divide both sides by 4: $x = 24 / 4 = 6$.'
+                    ],
+                    explanation: '$4x = 24 \\Rightarrow x = 6$.'
+                },
+                {
+                    id: 'u2_q3',
+                    difficulty: 'Medium',
+                    title: '3. Distributive Property Equations',
+                    text: 'Solve for $k$: $$3(k - 4) = 18$$',
+                    options: ['k = 6', 'k = 10', 'k = 22', 'k = 7.3'],
+                    correct: 1,
+                    hints: [
+                        'Hint 1: Expand brackets: $3k - 12 = 18$ (or divide both sides by 3 directly).',
+                        'Hint 2: If expanding: $3k = 18 + 12 = 30$.',
+                        'Hint 3: Divide by 3: $k = 30 / 3 = 10$.'
+                    ],
+                    explanation: '$3k - 12 = 18 \\Rightarrow 3k = 30 \\Rightarrow k = 10$.'
+                },
+                {
+                    id: 'u2_q4',
+                    difficulty: 'Medium',
+                    title: '4. Rate of Change / Slope Calculation',
+                    text: 'A line passes through points $(2, 5)$ and $(6, 17)$. What is its slope ($m$)?',
+                    options: ['m = 3', 'm = 4', 'm = 1/3', 'm = 12'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Slope formula is $m = \\frac{y_2 - y_1}{x_2 - x_1}$.',
+                        'Hint 2: $y_2 - y_1 = 17 - 5 = 12$.',
+                        'Hint 3: $x_2 - x_1 = 6 - 2 = 4$. Slope $m = 12 / 4 = 3$.'
+                    ],
+                    explanation: '$m = (17 - 5) / (6 - 2) = 12 / 4 = 3$.'
+                },
+                {
+                    id: 'u2_q5',
+                    difficulty: 'Medium',
+                    title: '5. Direct vs. Partial Variation',
+                    text: 'A taxi service charges a fixed base fee of $4.00 plus $1.50 per kilometer. Is this direct or partial variation, and why?',
+                    options: ['Direct variation because y-intercept is 0', 'Partial variation because y-intercept is 4.00', 'Direct variation because line passes through (0, 4)', 'Partial variation because slope is constant'],
+                    correct: 1,
+                    hints: [
+                        'Hint 1: Direct variation equations pass through origin $(0,0)$ with $y = mx$.',
+                        'Hint 2: Partial variation equations have an initial fixed value ($b \\neq 0$) with $y = mx + b$.',
+                        'Hint 3: Since there is a flat $4 base fee ($b=4$), it is partial variation.'
+                    ],
+                    explanation: 'It is partial variation because initial cost $b = 4.00 \\neq 0$.'
+                },
+                {
+                    id: 'u2_q6',
+                    difficulty: 'Hard',
+                    title: '6. Equations with Variables on Both Sides',
+                    text: 'Solve for $x$: $$5x + 3 = 2x + 15$$',
+                    options: ['x = 4', 'x = 3.6', 'x = 6', 'x = 2'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Subtract $2x$ from both sides to gather variables on left: $3x + 3 = 15$.',
+                        'Hint 2: Subtract 3 from both sides: $3x = 12$.',
+                        'Hint 3: Divide by 3: $x = 4$.'
+                    ],
+                    explanation: '$5x - 2x = 15 - 3 \\Rightarrow 3x = 12 \\Rightarrow x = 4$.'
+                },
+                {
+                    id: 'u2_q7',
+                    difficulty: 'Medium',
+                    title: '7. Converting Standard Form to Slope-Intercept',
+                    text: 'Convert equation $2x + y - 6 = 0$ into $y = mx + b$ form:',
+                    options: ['y = 2x + 6', 'y = -2x + 6', 'y = -2x - 6', 'y = 0.5x + 3'],
+                    correct: 1,
+                    hints: [
+                        'Hint 1: Isolate $y$ on the left side of equal sign.',
+                        'Hint 2: Move $2x$ to right by subtracting $2x$.',
+                        'Hint 3: Move $-6$ to right by adding 6. Result: $y = -2x + 6$.'
+                    ],
+                    explanation: 'Isolating $y$: $y = -2x + 6$.'
+                },
+                {
+                    id: 'u2_q8',
+                    difficulty: 'Hard',
+                    title: '8. Determining Equation from Point and Slope',
+                    text: 'What is the equation of line with slope $m = -2$ passing through point $(3, 1)$?',
+                    options: ['y = -2x + 7', 'y = -2x + 1', 'y = -2x - 5', 'y = 3x + 1'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Substitute $m = -2$, $x = 3$, $y = 1$ into $y = mx + b$.',
+                        'Hint 2: $1 = (-2)(3) + b \\Rightarrow 1 = -6 + b$.',
+                        'Hint 3: Solve for $b$: $b = 1 + 6 = 7$. Equation is $y = -2x + 7$.'
+                    ],
+                    explanation: '$1 = -2(3) + b \\Rightarrow b = 7$. Equation: $y = -2x + 7$.'
+                },
+                {
+                    id: 'u2_q9',
+                    difficulty: 'Hard',
+                    title: '9. Linear Modeling Application',
+                    text: 'A pool drains water at a rate of 40 L/min. Initially it contained 2,000 L. How long will it take to reach 400 L?',
+                    options: ['40 minutes', '50 minutes', '30 minutes', '10 minutes'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Write model: $V = 2000 - 40t$.',
+                        'Hint 2: Set volume $V = 400$: $400 = 2000 - 40t$.',
+                        'Hint 3: Subtract 2000: $-1600 = -40t \\Rightarrow t = 1600 / 40 = 40$ minutes.'
+                    ],
+                    explanation: '$400 = 2000 - 40t \\Rightarrow 40t = 1600 \\Rightarrow t = 40$ mins.'
+                },
+                {
+                    id: 'u2_q10',
+                    difficulty: 'Hard',
+                    title: '10. Point of Intersection (Systems Intro)',
+                    text: 'Where do lines $y = 2x$ and $y = -x + 6$ intersect?',
+                    options: ['(2, 4)', '(3, 6)', '(1, 2)', '(4, 8)'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Set equations equal: $2x = -x + 6$.',
+                        'Hint 2: Solve for $x$: $3x = 6 \\Rightarrow x = 2$.',
+                        'Hint 3: Substitute $x = 2$ back into $y = 2x$: $y = 4$. Coordinate is $(2, 4)$.'
+                    ],
+                    explanation: '$2x = -x + 6 \\Rightarrow 3x = 6 \\Rightarrow x = 2$. Then $y = 2(2) = 4$. Point is $(2, 4)$.'
+                }
+            ],
+            unit3: [
+                {
+                    id: 'u3_q1',
+                    difficulty: 'Easy',
+                    title: '1. Area of Composite Rectangles',
+                    text: 'An L-shaped room consists of two rectangles: $4\\text{ m} \\times 6\\text{ m}$ and $3\\text{ m} \\times 2\\text{ m}$. What is total area?',
+                    options: ['30 m²', '24 m²', '36 m²', '48 m²'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Calculate area of rectangle 1: $4 \\times 6 = 24$.',
+                        'Hint 2: Calculate area of rectangle 2: $3 \\times 2 = 6$.',
+                        'Hint 3: Add areas together: $24 + 6 = 30\\text{ m}^2$.'
+                    ],
+                    explanation: 'Area = $(4 \\times 6) + (3 \\times 2) = 24 + 6 = 30\\text{ m}^2$.'
+                },
+                {
+                    id: 'u3_q2',
+                    difficulty: 'Easy',
+                    title: '2. Volume of a Triangular Prism',
+                    text: 'A triangular prism has base triangle area $15\\text{ cm}^2$ and length $10\\text{ cm}$. What is its volume?',
+                    options: ['150 cm³', '75 cm³', '300 cm³', '50 cm³'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Prism Volume formula is $V = \\text{Base Area} \\times \\text{Height}$.',
+                        'Hint 2: Base Area = 15, Height (length) = 10.',
+                        'Hint 3: Multiply: $15 \\times 10 = 150\\text{ cm}^3$.'
+                    ],
+                    explanation: '$V = A_{base} \\times h = 15 \\times 10 = 150\\text{ cm}^3$.'
+                },
+                {
+                    id: 'u3_q3',
+                    difficulty: 'Medium',
+                    title: '3. Volume of a Cylinder',
+                    text: 'Calculate volume of a cylinder with radius $r = 3\\text{ m}$ and height $h = 7\\text{ m}$. (Use $\\pi \\approx 3.1416$)',
+                    options: ['197.92 m³', '65.97 m³', '131.95 m³', '439.82 m³'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Cylinder volume $V = \\pi r^2 h$.',
+                        'Hint 2: $r^2 = 3^2 = 9$.',
+                        'Hint 3: $V = 3.1416 \\times 9 \\times 7 = 197.92\\text{ m}^3$.'
+                    ],
+                    explanation: '$V = \\pi (3)^2 (7) = 63\\pi \\approx 197.92\\text{ m}^3$.'
+                },
+                {
+                    id: 'u3_q4',
+                    difficulty: 'Medium',
+                    title: '4. Parallel Line Angle Theorems (Z-Pattern)',
+                    text: 'Two parallel lines are cut by a transversal. If one alternate interior angle is $68^\\circ$, what is matching alternate angle?',
+                    options: ['68°', '112°', '180°', '90°'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Remember the Z-Pattern (Alternate Angles).',
+                        'Hint 2: Alternate interior angles between parallel lines are equal.',
+                        'Hint 3: Therefore, matching angle is $68^\\circ$.'
+                    ],
+                    explanation: 'Alternate interior angles (Z-pattern) are equal, so it equals $68^\\circ$.'
+                },
+                {
+                    id: 'u3_q5',
+                    difficulty: 'Medium',
+                    title: '5. Interior Angles of a Polygon',
+                    text: 'What is the sum of interior angles of a 6-sided polygon (hexagon)?',
+                    options: ['720°', '540°', '360°', '900°'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Polygon sum formula: $S = (n - 2) \\times 180^\\circ$.',
+                        'Hint 2: Substitute number of sides $n = 6$.',
+                        'Hint 3: $S = (6 - 2) \\times 180 = 4 \\times 180 = 720^\\circ$.'
+                    ],
+                    explanation: '$S = (6 - 2) \\times 180^\circ = 720^\circ$.'
+                },
+                {
+                    id: 'u3_q6',
+                    difficulty: 'Hard',
+                    title: '6. Computational Logic - Loop Trace',
+                    text: 'Consider algorithm: `total = 0; FOR i FROM 1 TO 4: total = total + (i * 2)`. What is `total` at end?',
+                    options: ['20', '10', '12', '16'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Trace iterations for $i = 1, 2, 3, 4$.',
+                        'Hint 2: i=1: total=2; i=2: total=2+4=6; i=3: total=6+6=12.',
+                        'Hint 3: i=4: total=12+8=20.'
+                    ],
+                    explanation: 'Values added: $2 + 4 + 6 + 8 = 20$.'
+                },
+                {
+                    id: 'u3_q7',
+                    difficulty: 'Medium',
+                    title: '7. Surface Area of a Box (Rectangular Prism)',
+                    text: 'Find total surface area of a box with dimensions $l = 5\\text{ cm}, w = 3\\text{ cm}, h = 4\\text{ cm}$.',
+                    options: ['94 cm²', '60 cm²', '47 cm²', '120 cm²'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: $SA = 2(lw + lh + wh)$.',
+                        'Hint 2: $lw = 15, lh = 20, wh = 12$. Sum = 47.',
+                        'Hint 3: $SA = 2 \\times 47 = 94\\text{ cm}^2$.'
+                    ],
+                    explanation: '$SA = 2(15 + 20 + 12) = 2(47) = 94\\text{ cm}^2$.'
+                },
+                {
+                    id: 'u3_q8',
+                    difficulty: 'Hard',
+                    title: '8. Pythagorean Theorem in 3D Context',
+                    text: 'A cone has radius $r = 6\\text{ cm}$ and slant height $s = 10\\text{ cm}$. What is its vertical height $h$?',
+                    options: ['8 cm', '4 cm', '11.6 cm', '16 cm'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Radius, height, and slant height form right triangle: $r^2 + h^2 = s^2$.',
+                        'Hint 2: $6^2 + h^2 = 10^2 \\Rightarrow 36 + h^2 = 100$.',
+                        'Hint 3: $h^2 = 64 \\Rightarrow h = 8\\text{ cm}$.'
+                    ],
+                    explanation: '$h = \\sqrt{10^2 - 6^2} = \\sqrt{64} = 8\\text{ cm}$.'
+                },
+                {
+                    id: 'u3_q9',
+                    difficulty: 'Hard',
+                    title: '9. Angle Optimization (C-Pattern)',
+                    text: 'Two interior angles on the same side of a transversal (C-pattern) are represented by $2x$ and $3x + 30^\\circ$. Find $x$.',
+                    options: ['30°', '36°', '45°', '50°'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Co-interior angles add up to $180^\\circ$.',
+                        'Hint 2: $2x + (3x + 30) = 180$.',
+                        'Hint 3: $5x + 30 = 180 \\Rightarrow 5x = 150 \\Rightarrow x = 30^\\circ$.'
+                    ],
+                    explanation: '$5x + 30 = 180 \\Rightarrow 5x = 150 \\Rightarrow x = 30^\circ$.'
+                },
+                {
+                    id: 'u3_q10',
+                    difficulty: 'Hard',
+                    title: '10. Conditional Coding Logic in Geometry',
+                    text: 'Pseudocode: `IF radius > 5 THEN area = 3.14 * r * r ELSE area = 0`. If `radius = 6`, what is `area`?',
+                    options: ['113.04', '0', '37.68', '78.5'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Check condition `radius > 5`. Is $6 > 5$? Yes (True).',
+                        'Hint 2: Execute true branch: `area = 3.14 * 6 * 6`.',
+                        'Hint 3: $3.14 \\times 36 = 113.04$.'
+                    ],
+                    explanation: 'Condition $6 > 5$ is true, so $area = 3.14 \\times 36 = 113.04$.'
+                }
+            ],
+            unit4: [
+                {
+                    id: 'u4_q1',
+                    difficulty: 'Easy',
+                    title: '1. Simple Interest Calculation',
+                    text: 'Calculate simple interest earned on $P = \\$500$ at $r = 4\\%$ annual rate for $t = 3$ years.',
+                    options: ['$60', '$600', '$60', '$120'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Formula $I = P \\times r \\times t$.',
+                        'Hint 2: Convert rate to decimal: $4\\% = 0.04$.',
+                        'Hint 3: $I = 500 \\times 0.04 \\times 3 = \\$60$.'
+                    ],
+                    explanation: '$I = 500 \\times 0.04 \\times 3 = \\$60$.'
+                },
+                {
+                    id: 'u4_q2',
+                    difficulty: 'Easy',
+                    title: '2. Mean and Median Analysis',
+                    text: 'Find median of data set: $[12, 18, 22, 25, 30, 40, 42]$.',
+                    options: ['25', '27', '22', '30'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Ensure values are ordered from smallest to largest.',
+                        'Hint 2: Median is middle value in an odd-numbered list.',
+                        'Hint 3: 4th number in list of 7 is 25.'
+                    ],
+                    explanation: 'The data is already ordered; middle number (4th position) is 25.'
+                },
+                {
+                    id: 'u4_q3',
+                    difficulty: 'Medium',
+                    title: '3. Compound Interest Total Amount',
+                    text: 'An investment of $1,000 is compounded annually at 6% for 2 years. Total value $A$ is:',
+                    options: ['$1,123.60', '$1,120.00', '$1,060.00', '$1,200.00'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Compound interest formula: $A = P(1 + r)^t$.',
+                        'Hint 2: $A = 1000(1 + 0.06)^2 = 1000(1.06)^2$.',
+                        'Hint 3: $1000 \\times 1.1236 = \\$1,123.60$.'
+                    ],
+                    explanation: '$A = 1000(1.06)^2 = \\$1,123.60$.'
+                },
+                {
+                    id: 'u4_q4',
+                    difficulty: 'Medium',
+                    title: '4. Identifying Correlation in Scatter Plots',
+                    text: 'As study time increases, test scores tend to increase. What type of correlation is this?',
+                    options: ['Positive correlation', 'Negative correlation', 'No correlation', 'Non-linear inverse'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: When both variables move in same direction (both increase), correlation is positive.',
+                        'Hint 2: When one increases while other decreases, correlation is negative.',
+                        'Hint 3: Here both increase, so positive correlation.'
+                    ],
+                    explanation: 'Both variables increase together, representing positive correlation.'
+                },
+                {
+                    id: 'u4_q5',
+                    difficulty: 'Medium',
+                    title: '5. Budgeting Percentages',
+                    text: 'Sam earns $2,400 monthly. If Sam spends $720 on rent, what percentage of monthly income goes to rent?',
+                    options: ['30%', '25%', '35%', '40%'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Percentage formula = $(\\text{Part} / \\text{Whole}) \\times 100\\%$.',
+                        'Hint 2: $720 / 2400 = 0.30$.',
+                        'Hint 3: $0.30 \\times 100\\% = 30\\%$.'
+                    ],
+                    explanation: '$(720 / 2400) \\times 100\\% = 30\\%$.'
+                },
+                {
+                    id: 'u4_q6',
+                    difficulty: 'Hard',
+                    title: '6. Theoretical Probability',
+                    text: 'A standard deck of 52 cards has 13 hearts. What is probability of drawing a heart, simplified?',
+                    options: ['1/4', '1/13', '1/2', '3/10'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: $P(\\text{Heart}) = 13 / 52$.',
+                        'Hint 2: Divide numerator and denominator by 13.',
+                        'Hint 3: $13 / 52 = 1/4$.'
+                    ],
+                    explanation: '$13 / 52 = 1/4 = 25\\%$.'
+                },
+                {
+                    id: 'u4_q7',
+                    difficulty: 'Hard',
+                    title: '7. Comparing Financial Options',
+                    text: 'Option A: Earn $100 simple interest over 2 yrs. Option B: Invest $1000 at 5% compounded annually for 2 yrs. Which earns more interest?',
+                    options: ['Option A ($100) vs Option B ($102.50) -> Option B wins by $2.50', 'Option A wins by $10', 'Both earn equal interest', 'Option A wins by $2.50'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Option A interest = $100.',
+                        'Hint 2: Option B total = $1000(1.05)^2 = $1025.50. Interest = $1025.50 - $1000 = $25.50? Wait: $1.05^2 = 1.1025 \\Rightarrow \\$102.50$ interest.',
+                        'Hint 3: Option B earns $102.50 vs Option A $100. Option B wins by $2.50.'
+                    ],
+                    explanation: 'Option B interest = $1000(1.05^2 - 1) = \\$102.50$. Option B earns $\\$2.50$ more.'
+                },
+                {
+                    id: 'u4_q8',
+                    difficulty: 'Medium',
+                    title: '8. Line of Best Fit Interpolation',
+                    text: 'A line of best fit model is $y = 2.5x + 10$ (where $x$ = hours worked, $y$ = earnings in $). Estimate earnings for 6 hours.',
+                    options: ['$25', '$20', '$30', '$15'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Substitute $x = 6$ into model equation.',
+                        'Hint 2: $y = 2.5(6) + 10$.',
+                        'Hint 3: $2.5 \\times 6 = 15$. $15 + 10 = 25$.'
+                    ],
+                    explanation: '$y = 2.5(6) + 10 = 15 + 10 = \\$25$.'
+                },
+                {
+                    id: 'u4_q9',
+                    difficulty: 'Hard',
+                    title: '9. Appreciation vs Depreciation',
+                    text: 'A car purchased for $20,000 depreciates by 10% each year. What is its value after 2 years?',
+                    options: ['$16,200', '$16,000', '$18,000', '$14,400'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Year 1 value = $20,000 \\times (1 - 0.10) = 20,000 \\times 0.90 = \\$18,000$.',
+                        'Hint 2: Year 2 value = $18,000 \\times 0.90 = \\$16,200$.',
+                        'Hint 3: Formula: $V = 20000(0.90)^2 = 20000(0.81) = \\$16,200$.'
+                    ],
+                    explanation: 'Depreciation formula: $V = 20000(1 - 0.10)^2 = 20000(0.81) = \\$16,200$.'
+                },
+                {
+                    id: 'u4_q10',
+                    difficulty: 'Hard',
+                    title: '10. Experimental vs Theoretical Probability',
+                    text: 'A die is rolled 60 times and lands on 6 a total of 15 times. What is difference between experimental and theoretical probability of rolling a 6?',
+                    options: ['Experimental is 25% (15/60), Theoretical is 16.67% (1/6)', 'Both are equal at 25%', 'Experimental is 10%, Theoretical is 20%', 'Theoretical is 25%, Experimental is 16.67%'],
+                    correct: 0,
+                    hints: [
+                        'Hint 1: Experimental = $\\text{Successful trials} / \\text{Total trials} = 15/60 = 0.25 = 25\\%$.',
+                        'Hint 2: Theoretical = $1/6 \\approx 0.1667 = 16.67\\%$.',
+                        'Hint 3: Experimental is 25% vs Theoretical 16.67%.'
+                    ],
+                    explanation: 'Experimental = $15/60 = 25\\%$. Theoretical for a 6-sided die = $1/6 \\approx 16.67\\%$.'
+                }
+            ]
+        };
+
+        // --- STATE MANAGEMENT ---
+        const state = {
+            activeUnit: 'overview',
+            xp: 0,
+            streak: 3,
+            difficultyFilter: 'all',
+            solvedQuestions: new Set(),
+            unitProgress: {
+                unit1: 0,
+                unit2: 0,
+                unit3: 0,
+                unit4: 0
+            },
+            badges: {
+                unit1: false,
+                unit2: false,
+                unit3: false,
+                unit4: false
+            }
+        };
+
+        const activeHintState = {};
+
+        // DOM Ready Init
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            setupEventListeners();
+            renderContent();
+            updateStatsUI();
+        });
+
+        // Theme Toggle
+        function initTheme() {
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const darkIcon = document.getElementById('theme-toggle-dark-icon');
+            const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                darkIcon.classList.remove('hidden');
+                lightIcon.classList.add('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                lightIcon.classList.remove('hidden');
+                darkIcon.classList.add('hidden');
+            }
+
+            themeToggleBtn.addEventListener('click', () => {
+                darkIcon.classList.toggle('hidden');
+                lightIcon.classList.toggle('hidden');
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            const sidebarBtn = document.getElementById('toggle-sidebar');
+            const sidebar = document.getElementById('sidebar');
+            sidebarBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+            });
+
+            const navButtons = document.querySelectorAll('.unit-btn');
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetUnit = btn.dataset.unit;
+                    state.activeUnit = targetUnit;
+                    
+                    navButtons.forEach(b => {
+                        b.classList.remove('bg-brand-50', 'text-brand-700', 'dark:bg-slate-700', 'dark:text-white');
+                        b.classList.add('text-slate-600', 'dark:text-slate-300');
+                    });
+                    btn.classList.add('bg-brand-50', 'text-brand-700', 'dark:bg-slate-700', 'dark:text-white');
+
+                    if (window.innerWidth < 768) {
+                        sidebar.classList.add('-translate-x-full');
+                    }
+
+                    renderContent();
+                });
+            });
+        }
+
+        function updateStatsUI() {
+            document.getElementById('xp-count').innerText = state.xp;
+            document.getElementById('streak-count').innerText = state.streak;
+
+            const solvedTotal = state.solvedQuestions.size;
+            const pct = Math.round((solvedTotal / 40) * 100);
+
+            document.getElementById('solved-count').innerText = solvedTotal;
+            document.getElementById('overall-progress-bar').style.width = `${pct}%`;
+            document.getElementById('overall-progress-text').innerText = `${pct}%`;
+
+            // Check badges (Unlocked when 5+ questions solved per unit)
+            ['unit1', 'unit2', 'unit3', 'unit4'].forEach(u => {
+                const solvedInUnit = questionBank[u].filter(q => state.solvedQuestions.has(q.id)).length;
+                if (solvedInUnit >= 5) state.badges[u] = true;
+
+                const el = document.getElementById(`badge-${u.replace('unit', 'u')}`);
+                if (state.badges[u]) {
+                    el.classList.remove('grayscale', 'opacity-40');
+                    el.classList.add('scale-110');
+                }
+            });
+        }
+
+        function renderContent() {
+            const container = document.getElementById('main-content');
+            container.innerHTML = '';
+
+            switch (state.activeUnit) {
+                case 'overview': renderOverview(container); break;
+                case 'unit1': renderUnit1(container); break;
+                case 'unit2': renderUnit2(container); break;
+                case 'unit3': renderUnit3(container); break;
+                case 'unit4': renderUnit4(container); break;
+            }
+
+            if (window.MathJax) MathJax.typesetPromise();
+        }
+
+        // --- OVERVIEW ---
+        function renderOverview(container) {
+            container.innerHTML = `
+                <div class="space-y-6">
+                    <div class="bg-gradient-to-r from-brand-600 to-indigo-600 text-white rounded-2xl p-6 sm:p-8 shadow-lg">
+                        <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider">Ontario Curriculum MTH1W</span>
+                        <h2 class="text-3xl font-extrabold mt-3">Grade 9 Destreamed Math Hub</h2>
+                        <p class="mt-2 text-brand-100 max-w-2xl">
+                            Interactive practice hub containing 40+ guided problems, interactive mathematical visualizers, step-by-step hint systems, and real-time concept tools.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 hover:shadow-md transition">
+                            <h3 class="font-bold text-slate-800 dark:text-white text-lg">Unit 1: Exponents & Rational Numbers</h3>
+                            <p class="text-xs text-slate-500 mt-1 mb-3">10 Questions • Exponent simulator tool</p>
+                            <button onclick="switchUnit('unit1')" class="text-purple-600 font-semibold text-sm hover:underline">Start Unit 1 &rarr;</button>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 hover:shadow-md transition">
+                            <h3 class="font-bold text-slate-800 dark:text-white text-lg">Unit 2: Algebra & Linear Relations</h3>
+                            <p class="text-xs text-slate-500 mt-1 mb-3">10 Questions • Interactive $y=mx+b$ Canvas Plotter</p>
+                            <button onclick="switchUnit('unit2')" class="text-blue-600 font-semibold text-sm hover:underline">Start Unit 2 &rarr;</button>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 hover:shadow-md transition">
+                            <h3 class="font-bold text-slate-800 dark:text-white text-lg">Unit 3: Geometry & Computational Math</h3>
+                            <p class="text-xs text-slate-500 mt-1 mb-3">10 Questions • 3D Volume Tool & Code Loops</p>
+                            <button onclick="switchUnit('unit3')" class="text-emerald-600 font-semibold text-sm hover:underline">Start Unit 3 &rarr;</button>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 hover:shadow-md transition">
+                            <h3 class="font-bold text-slate-800 dark:text-white text-lg">Unit 4: Data & Financial Literacy</h3>
+                            <p class="text-xs text-slate-500 mt-1 mb-3">10 Questions • Compound Interest Growth Simulator</p>
+                            <button onclick="switchUnit('unit4')" class="text-amber-600 font-semibold text-sm hover:underline">Start Unit 4 &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function switchUnit(unitKey) {
+            const btn = document.querySelector(`.unit-btn[data-unit="${unitKey}"]`);
+            if (btn) btn.click();
+        }
+
+        // --- RENDER UNITS & QUESTION CARDS ---
+        function renderUnitHeader(unitTitle, subtitle, unitKey) {
+            return `
+                <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-4 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800 dark:text-white">${unitTitle}</h2>
+                        <p class="text-sm text-slate-500">${subtitle}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-semibold text-slate-500">Filter Difficulty:</span>
+                        <select onchange="filterDifficulty('${unitKey}', this.value)" class="bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-xs p-1.5 font-medium">
+                            <option value="all">All Difficulties</option>
+                            <option value="Easy">Easy</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+        }
+
+        function filterDifficulty(unitKey, level) {
+            state.difficultyFilter = level;
+            renderContent();
+        }
+
+        function renderQuestionsList(unitKey) {
+            let questions = questionBank[unitKey];
+            if (state.difficultyFilter !== 'all') {
+                questions = questions.filter(q => q.difficulty === state.difficultyFilter);
+            }
+
+            return questions.map(q => renderQuestionCard(unitKey, q)).join('');
+        }
+
+        function renderQuestionCard(unitKey, q) {
+            const diffColor = q.difficulty === 'Easy' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' :
+                              q.difficulty === 'Medium' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300' :
+                              'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300';
+            const isSolved = state.solvedQuestions.has(q.id);
+
+            return `
+                <div class="border border-slate-200 dark:border-slate-700 rounded-xl p-5 bg-white dark:bg-slate-800 shadow-sm transition hover:shadow">
+                    <div class="flex justify-between items-start gap-2 mb-2">
+                        <div class="font-bold text-slate-800 dark:text-white text-base">${q.title}</div>
+                        <div class="flex items-center gap-2">
+                            ${isSolved ? '<span class="text-xs px-2 py-0.5 bg-emerald-500 text-white font-bold rounded-full"><i class="fa-solid fa-check mr-1"></i>Solved</span>' : ''}
+                            <span class="text-xs px-2.5 py-1 font-semibold rounded-full ${diffColor}">${q.difficulty}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-sm text-slate-600 dark:text-slate-300 mb-4">${q.text}</div>
+
+                    <!-- Multiple Choice -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4" id="options-${q.id}">
+                        ${q.options.map((opt, i) => `
+                            <button onclick="checkAnswer('${unitKey}', '${q.id}', ${i})" class="opt-btn border border-slate-200 dark:border-slate-700 hover:border-brand-500 dark:hover:border-brand-400 rounded-lg p-2.5 text-left text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700/60 transition">
+                                <span class="inline-block w-6 h-6 text-center leading-6 rounded-full bg-slate-100 dark:bg-slate-700 text-xs font-bold mr-2 text-slate-600 dark:text-slate-300">${String.fromCharCode(65 + i)}</span>
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <!-- Feedback Area -->
+                    <div id="feedback-${q.id}" class="hidden p-3 rounded-lg text-sm mb-3"></div>
+
+                    <!-- Step-by-Step Guided Hints -->
+                    <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-700/50">
+                        <button onclick="showNextHint('${q.id}')" id="hint-btn-${q.id}" class="text-xs font-semibold text-brand-600 dark:text-brand-400 flex items-center gap-1 hover:underline">
+                            <i class="fa-solid fa-lightbulb"></i> Need a Step-by-Step Hint? (0/${q.hints.length})
+                        </button>
+                        <div id="hints-container-${q.id}" class="space-y-1.5 text-xs"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- UNIT 1 RENDER ---
+        function renderUnit1(container) {
+            container.innerHTML = `
+                <div class="space-y-6">
+                    ${renderUnitHeader('Unit 1: Exponents & Rational Numbers', 'Master exponent laws, operations with fractions, and numerical expressions.', 'unit1')}
+
+                    <!-- Tool 1: Exponent Simulator -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <h3 class="font-bold text-lg mb-3 flex items-center gap-2 text-purple-600 dark:text-purple-400">
+                            <i class="fa-solid fa-flask"></i> Interactive Exponent Rule Simulator
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">Select Rule Type</label>
+                                <select id="exp-rule-select" onchange="updateExponentSim()" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg p-2 text-sm">
+                                    <option value="product">Product Rule: xᵃ × xᵇ</option>
+                                    <option value="quotient">Quotient Rule: xᵃ ÷ xᵇ</option>
+                                    <option value="power">Power of Power Rule: (xᵃ)ᵇ</option>
+                                    <option value="zero">Zero Exponent Rule: x⁰</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">Exponent 'a'</label>
+                                <input type="number" id="exp-a" value="3" min="1" max="8" onchange="updateExponentSim()" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg p-2 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">Exponent 'b'</label>
+                                <input type="number" id="exp-b" value="2" min="1" max="8" onchange="updateExponentSim()" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg p-2 text-sm">
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-purple-50 dark:bg-purple-950/30 rounded-xl border border-purple-200 dark:border-purple-900 text-center">
+                            <div id="exp-expression-display" class="text-xl font-bold text-purple-700 dark:text-purple-300 mb-1"></div>
+                            <div id="exp-explanation-display" class="text-xs text-slate-600 dark:text-slate-300"></div>
+                        </div>
+                    </div>
+
+                    <!-- 10 Questions -->
+                    <div class="space-y-4">
+                        ${renderQuestionsList('unit1')}
+                    </div>
+                </div>
+            `;
+            updateExponentSim();
+        }
+
+        function updateExponentSim() {
+            const rule = document.getElementById('exp-rule-select').value;
+            const a = parseInt(document.getElementById('exp-a').value) || 1;
+            const b = parseInt(document.getElementById('exp-b').value) || 1;
+            const exprDisplay = document.getElementById('exp-expression-display');
+            const expDisplay = document.getElementById('exp-explanation-display');
+
+            if (rule === 'product') {
+                exprDisplay.innerText = `x${toSuperscript(a)} × x${toSuperscript(b)} = x${toSuperscript(a + b)}`;
+                expDisplay.innerText = `Add exponents: ${a} + ${b} = ${a + b}`;
+            } else if (rule === 'quotient') {
+                exprDisplay.innerText = `x${toSuperscript(a)} ÷ x${toSuperscript(b)} = x${toSuperscript(a - b)}`;
+                expDisplay.innerText = `Subtract exponents: ${a} - ${b} = ${a - b}`;
+            } else if (rule === 'power') {
+                exprDisplay.innerText = `(x${toSuperscript(a)})${toSuperscript(b)} = x${toSuperscript(a * b)}`;
+                expDisplay.innerText = `Multiply inner by outer exponent: ${a} × ${b} = ${a * b}`;
+            } else if (rule === 'zero') {
+                exprDisplay.innerText = `x⁰ = 1`;
+                expDisplay.innerText = `Any non-zero expression raised to power 0 equals 1`;
+            }
+        }
+
+        function toSuperscript(num) {
+            const sups = {'-':'⁻', '0':'⁰', '1':'¹', '2':'²', '3':'³', '4':'⁴', '5':'⁵', '6':'⁶', '7':'⁷', '8':'⁸', '9':'⁹'};
+            return String(num).split('').map(c => sups[c] || c).join('');
+        }
+
+        // --- UNIT 2 RENDER ---
+        function renderUnit2(container) {
+            container.innerHTML = `
+                <div class="space-y-6">
+                    ${renderUnitHeader('Unit 2: Algebra & Linear Relations', 'Polynomial expansion, solving multi-step equations, and linear modeling ($y=mx+b$).', 'unit2')}
+
+                    <!-- Tool 2: Linear Grapher -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <h3 class="font-bold text-lg mb-3 flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                            <i class="fa-solid fa-chart-line"></i> Dynamic Linear Plotter ($y = mx + b$)
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between text-sm font-semibold mb-1">
+                                        <span>Slope ($m$):</span>
+                                        <span id="m-val-text" class="text-blue-600 font-bold">2</span>
+                                    </div>
+                                    <input type="range" id="m-slider" min="-5" max="5" step="0.5" value="2" oninput="drawLinearGraph()" class="w-full accent-blue-600">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm font-semibold mb-1">
+                                        <span>y-Intercept ($b$):</span>
+                                        <span id="b-val-text" class="text-blue-600 font-bold">1</span>
+                                    </div>
+                                    <input type="range" id="b-slider" min="-5" max="5" step="1" value="1" oninput="drawLinearGraph()" class="w-full accent-blue-600">
+                                </div>
+                                <div class="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg text-xs space-y-1">
+                                    <div><strong>Equation:</strong> <span id="eq-formula" class="font-bold text-blue-700 dark:text-blue-300 text-sm">y = 2x + 1</span></div>
+                                </div>
+                            </div>
+                            <div class="md:col-span-2 relative min-h-[240px] bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center p-2">
+                                <canvas id="linearCanvas" width="400" height="240" class="w-full h-full"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 10 Questions -->
+                    <div class="space-y-4">
+                        ${renderQuestionsList('unit2')}
+                    </div>
+                </div>
+            `;
+            setTimeout(drawLinearGraph, 50);
+        }
+
+        function drawLinearGraph() {
+            const m = parseFloat(document.getElementById('m-slider').value);
+            const b = parseFloat(document.getElementById('b-slider').value);
+            
+            document.getElementById('m-val-text').innerText = m;
+            document.getElementById('b-val-text').innerText = b;
+
+            let eq = 'y = ';
+            if (m !== 0) eq += `${m === 1 ? '' : m === -1 ? '-' : m}x`;
+            if (b > 0) eq += `${m !== 0 ? ' + ' : ''}${b}`;
+            else if (b < 0) eq += ` - ${Math.abs(b)}`;
+            else if (m === 0) eq += '0';
+            document.getElementById('eq-formula').innerText = eq;
+
+            const canvas = document.getElementById('linearCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            const originX = w / 2;
+            const originY = h / 2;
+            const scale = 20;
+
+            ctx.strokeStyle = document.documentElement.classList.contains('dark') ? '#334155' : '#e2e8f0';
+            ctx.lineWidth = 1;
+
+            for (let x = 0; x < w; x += scale) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+            }
+            for (let y = 0; y < h; y += scale) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+            }
+
+            ctx.strokeStyle = document.documentElement.classList.contains('dark') ? '#94a3b8' : '#64748b';
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(0, originY); ctx.lineTo(w, originY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(originX, 0); ctx.lineTo(originX, h); ctx.stroke();
+
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+
+            const x1 = -10, y1 = m * x1 + b;
+            const x2 = 10, y2 = m * x2 + b;
+
+            ctx.moveTo(originX + x1 * scale, originY - y1 * scale);
+            ctx.lineTo(originX + x2 * scale, originY - y2 * scale);
+            ctx.stroke();
+
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(originX, originY - b * scale, 5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // --- UNIT 3 RENDER ---
+        function renderUnit3(container) {
+            container.innerHTML = `
+                <div class="space-y-6">
+                    ${renderUnitHeader('Unit 3: Geometry & Computational Math', 'Composite area, 3D volume, angle theorems, and coding loop algorithms.', 'unit3')}
+
+                    <!-- Tool 3: Geometry & Code Simulator -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <h3 class="font-bold text-lg mb-3 flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                                <i class="fa-solid fa-cube"></i> 3D Volume & Surface Area Tool
+                            </h3>
+                            <div class="space-y-3 text-sm">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 mb-1">Shape</label>
+                                    <select id="geo-shape" onchange="calculateGeo()" class="w-full bg-slate-50 dark:bg-slate-700 border rounded-lg p-2">
+                                        <option value="cylinder">Cylinder (r, h)</option>
+                                        <option value="prism">Rectangular Prism (l, w, h)</option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block text-xs text-slate-500" id="dim1-label">Radius (r)</label>
+                                        <input type="number" id="dim1" value="4" min="1" oninput="calculateGeo()" class="w-full bg-slate-50 dark:bg-slate-700 border rounded-lg p-2">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-slate-500" id="dim2-label">Height (h)</label>
+                                        <input type="number" id="dim2" value="10" min="1" oninput="calculateGeo()" class="w-full bg-slate-50 dark:bg-slate-700 border rounded-lg p-2">
+                                    </div>
+                                </div>
+                                <div class="p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg space-y-1">
+                                    <div class="text-emerald-700 dark:text-emerald-300 font-bold" id="geo-vol-res">Volume: 502.65 units³</div>
+                                    <div class="text-xs text-slate-600 dark:text-slate-300" id="geo-sa-res">Surface Area: 351.86 units²</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <h3 class="font-bold text-lg mb-3 flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                                <i class="fa-solid fa-code"></i> Coding Pseudocode Tracer
+                            </h3>
+                            <div class="bg-slate-900 text-slate-100 p-3 rounded-lg font-mono text-xs space-y-1 mb-3">
+                                <div><span class="text-purple-400">sum</span> = 0</div>
+                                <div><span class="text-blue-400">FOR</span> i <span class="text-blue-400">IN</span> [1, 2, 3, 4]:</div>
+                                <div class="pl-4">sum = sum + (i * 5)</div>
+                            </div>
+                            <button onclick="runCodeSim()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 rounded-lg text-sm transition">
+                                <i class="fa-solid fa-play mr-1"></i> Run Algorithm
+                            </button>
+                            <div id="code-output" class="mt-2 text-xs font-mono p-2 bg-slate-100 dark:bg-slate-700 rounded hidden"></div>
+                        </div>
+                    </div>
+
+                    <!-- 10 Questions -->
+                    <div class="space-y-4">
+                        ${renderQuestionsList('unit3')}
+                    </div>
+                </div>
+            `;
+            calculateGeo();
+        }
+
+        function calculateGeo() {
+            const shape = document.getElementById('geo-shape').value;
+            const d1 = parseFloat(document.getElementById('dim1').value) || 1;
+            const d2 = parseFloat(document.getElementById('dim2').value) || 1;
+            const label1 = document.getElementById('dim1-label');
+            const volRes = document.getElementById('geo-vol-res');
+            const saRes = document.getElementById('geo-sa-res');
+
+            if (shape === 'cylinder') {
+                label1.innerText = "Radius (r)";
+                const vol = Math.PI * d1 * d1 * d2;
+                const sa = 2 * Math.PI * d1 * d2 + 2 * Math.PI * d1 * d1;
+                volRes.innerText = `Volume: ${vol.toFixed(2)} units³ (V = πr²h)`;
+                saRes.innerText = `Surface Area: ${sa.toFixed(2)} units² (SA = 2πrh + 2πr²)`;
+            } else {
+                label1.innerText = "Length (l)";
+                const width = 5;
+                const vol = d1 * width * d2;
+                const sa = 2 * (d1 * width + d1 * d2 + width * d2);
+                volRes.innerText = `Volume: ${vol.toFixed(2)} units³ (Width = 5)`;
+                saRes.innerText = `Surface Area: ${sa.toFixed(2)} units²`;
+            }
+        }
+
+        function runCodeSim() {
+            const out = document.getElementById('code-output');
+            out.classList.remove('hidden');
+            let sum = 0;
+            let steps = "Tracing Loop:\n";
+            [1, 2, 3, 4].forEach(i => {
+                sum += i * 5;
+                steps += `i = ${i} -> added ${i*5} -> sum = ${sum}\n`;
+            });
+            steps += `\nFinal output: ${sum}`;
+            out.innerText = steps;
+        }
+
+        // --- UNIT 4 RENDER ---
+        function renderUnit4(container) {
+            container.innerHTML = `
+                <div class="space-y-6">
+                    ${renderUnitHeader('Unit 4: Data & Financial Literacy', 'Scatter plots, two-variable data, simple vs. compound interest, and personal budgeting.', 'unit4')}
+
+                    <!-- Tool 4: Financial Growth Calculator -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <h3 class="font-bold text-lg mb-3 flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                            <i class="fa-solid fa-chart-area"></i> Interest Growth Visualizer (Simple vs Compound)
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">Principal ($P$)</label>
+                                <input type="number" id="fin-p" value="1000" step="100" onchange="updateFinancialChart()" class="w-full bg-slate-50 dark:bg-slate-700 border rounded-lg p-2 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">Interest Rate (%)</label>
+                                <input type="number" id="fin-r" value="7" step="0.5" onchange="updateFinancialChart()" class="w-full bg-slate-50 dark:bg-slate-700 border rounded-lg p-2 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">Years ($t$)</label>
+                                <input type="number" id="fin-t" value="10" min="1" max="25" onchange="updateFinancialChart()" class="w-full bg-slate-50 dark:bg-slate-700 border rounded-lg p-2 text-sm">
+                            </div>
+                        </div>
+                        <div class="relative min-h-[220px]">
+                            <canvas id="financialChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 10 Questions -->
+                    <div class="space-y-4">
+                        ${renderQuestionsList('unit4')}
+                    </div>
+                </div>
+            `;
+            setTimeout(updateFinancialChart, 50);
+        }
+
+        let currentChartInstance = null;
+        function updateFinancialChart() {
+            const P = parseFloat(document.getElementById('fin-p').value) || 1000;
+            const r = (parseFloat(document.getElementById('fin-r').value) || 7) / 100;
+            const t = parseInt(document.getElementById('fin-t').value) || 10;
+
+            const labels = [];
+            const simpleData = [];
+            const compoundData = [];
+
+            for (let yr = 0; yr <= t; yr++) {
+                labels.push(`Year ${yr}`);
+                simpleData.push(P + (P * r * yr));
+                compoundData.push(P * Math.pow(1 + r, yr));
+            }
+
+            const ctx = document.getElementById('financialChart');
+            if (!ctx) return;
+
+            if (currentChartInstance) currentChartInstance.destroy();
+
+            currentChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Compound Interest A=P(1+r)ᵗ',
+                            data: compoundData,
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Simple Interest I=Prt',
+                            data: simpleData,
+                            borderColor: '#64748b',
+                            borderDash: [5, 5],
+                            fill: false,
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top' } }
+                }
+            });
+        }
+
+        // --- HINT & ANSWER CHECKING SYSTEM ---
+        function showNextHint(qId) {
+            const currentStep = activeHintState[qId] || 0;
+            let question = null;
+            Object.values(questionBank).forEach(unitQs => {
+                const found = unitQs.find(q => q.id === qId);
+                if (found) question = found;
+            });
+
+            if (!question || currentStep >= question.hints.length) return;
+
+            const container = document.getElementById(`hints-container-${qId}`);
+            const hintDiv = document.createElement('div');
+            hintDiv.className = 'p-2.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 rounded-lg text-xs leading-relaxed';
+            hintDiv.innerHTML = question.hints[currentStep];
+            container.appendChild(hintDiv);
+
+            activeHintState[qId] = currentStep + 1;
+            document.getElementById(`hint-btn-${qId}`).innerHTML = `<i class="fa-solid fa-lightbulb"></i> Need a Step-by-Step Hint? (${activeHintState[qId]}/${question.hints.length})`;
+
+            if (activeHintState[qId] >= question.hints.length) {
+                document.getElementById(`hint-btn-${qId}`).classList.add('opacity-50', 'pointer-events-none');
+            }
+
+            if (window.MathJax) MathJax.typesetPromise();
+        }
+
+        function checkAnswer(unitKey, qId, selectedIdx) {
+            let question = null;
+            Object.values(questionBank).forEach(unitQs => {
+                const found = unitQs.find(q => q.id === qId);
+                if (found) question = found;
+            });
+
+            const feedback = document.getElementById(`feedback-${qId}`);
+            feedback.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-800', 'bg-red-100', 'text-red-800', 'dark:bg-emerald-950/60', 'dark:text-emerald-300', 'dark:bg-red-950/60', 'dark:text-red-300');
+
+            if (selectedIdx === question.correct) {
+                feedback.classList.add('bg-emerald-100', 'dark:bg-emerald-950/60', 'text-emerald-800', 'dark:text-emerald-300');
+                feedback.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> <strong>Correct!</strong> ${question.explanation}`;
+                
+                if (!state.solvedQuestions.has(qId)) {
+                    state.solvedQuestions.add(qId);
+                    state.xp += question.difficulty === 'Easy' ? 20 : question.difficulty === 'Medium' ? 30 : 50;
+                    updateStatsUI();
+                }
+            } else {
+                feedback.classList.add('bg-red-100', 'dark:bg-red-950/60', 'text-red-800', 'dark:text-red-300');
+                feedback.innerHTML = `<i class="fa-solid fa-circle-xmark text-red-600 mr-1"></i> <strong>Not quite right.</strong> Check the hint guides below and try again!`;
+            }
+
+            if (window.MathJax) MathJax.typesetPromise();
+        }
+    </script>
+</body>
+</html>
